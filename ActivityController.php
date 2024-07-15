@@ -3,6 +3,13 @@ defined('BASEPATH'); // nao pode ser acessado pelo navegador
 
 class ActivityController extends CI_Controller {
 
+    public function __construct() {
+        parent::__construct();
+        $this->load->helper('url');
+        $this->load->model('ActivityModel');
+        $this->load->database();
+    }
+
     public function index() { // exibir a lista de atividades do usuário
         $this->load->model('ActivityModel');
         // obtém id do usuario da sessao

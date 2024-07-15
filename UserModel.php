@@ -1,6 +1,11 @@
 <?php
 class UserModel extends CI_Model {
 
+    public function __construct() {
+        parent::__construct();
+        $this->load->database();
+    }
+
     public function insert($data) { // inserir dado/registro na tabela 'users'
         $this->db->insert('users', $data); // insere o dado $data na tabela 'users' do banco
     }

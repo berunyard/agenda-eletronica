@@ -3,6 +3,13 @@ defined('BASEPATH'); // nao pode ser acessado pelo navegador
 
 class UserController extends CI_Controller {
 
+    public function __construct() {
+        parent::__construct();
+        $this->load->helper('url');
+        $this->load->model('UserModel');
+        $this->load->database();
+    }
+    
     public function register() { // exibe formulário de registro
         $this->load->view('register'); // carrega a view do register.php
     }
