@@ -1,5 +1,6 @@
 <?php
-class ActivityModel extends CI_Model {
+
+/*class ActivityModel extends Model {
 
     public function __construct() {
         parent::__construct();
@@ -27,6 +28,43 @@ class ActivityModel extends CI_Model {
 
     public function delete($id) { // deleta atividade 
         $this->db->delete('activities', array('id' => $id)); // deleta atv no databse com o id dado pelo usuário
+    }
+}*/
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+class ActivityModel extends Model
+{
+    protected $table = 'activities';
+    protected $primaryKey = 'id';
+    protected $allowedFields = ['user_id', 'nome', 'descricao', 'data_inicio', 'data_termino', 'status'];
+
+
+    public function insertActivity($data)
+    {
+        return $this->insert($data);
+    }
+
+    public function getActivity($id)
+    {
+        return $this->find($id);
+    }
+
+    public function getActivitiesByUser($user_id)
+    {
+        return $this->where('user_id', $user_id)->findAll();
+    }
+
+    public function updateActivity($id, $data)
+    {
+        return $this->update($id, $data);
+    }
+
+    public function deleteActivity($id)
+    {
+        return $this->delete($id);
     }
 }
 

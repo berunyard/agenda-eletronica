@@ -1,7 +1,8 @@
 <?php
+/*use CodeIgniter\Controller;
 defined('BASEPATH'); // nao pode ser acessado pelo navegador
 
-class UserController extends CI_Controller {
+class UserController extends Controller {
 
     public function __construct() {
         parent::__construct();
@@ -55,4 +56,101 @@ class UserController extends CI_Controller {
         // vai pra pág de login
         redirect('user/login');
     }
+}*/
+
+namespace App\Controllers;
+
+use CodeIgniter\Controller;
+use App\Models\UserModel;
+
+class UserController extends Controller
+{
+    protected $userModel;
+
+    public function __construct()
+    {
+        helper(['form', 'url']);
+        $this->userModel = new UserModel(); // inicializa UserModel
+    }
+
+    public function register()
+    {
+        // carrega registro view
+        return view('register');
+    }
+
+    public function store()
+    {
+        // valida a data
+        $validationRules = [
+            'login' => 'required',
+            'senha' => 'required'
+        ];
+
+        if (!$this->validate($validationRules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        // processa data
+        $data = [
+            'login' => $this->request->getPost('login'),
+            'senha' => password_hash($this->request->getPost('senha'), PASSWORD_BCRYPT)
+        ];
+
+        // vai pra db
+        $this->userModel->insert($data);
+
+        // redireciona p pag de login
+        return redirect()->to('login');
+    }
+
+    public function login()
+    {
+        // tela de login
+        return view('login');
+    }
+
+    public function authenticate()
+    {
+        // valida data do formulario
+        $validationRules = [
+            'login' => 'required',
+            'senha' => 'required'
+        ];
+
+        if (!$this->validate($validationRules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        // login
+        $login = $this->request->getPost('login');
+        $senha = $this->request->getPost('senha');
+
+        // pega usuario login
+        $user = $this->userModel->getByLogin($login);
+
+        // verifica senha
+        if ($user && password_verify($senha, $user->senha)) {
+            // sessao
+            $session = session();
+            $session->set('user_id', $user->id);
+
+            // volta pra activity pag
+            return redirect()->to('activity');
+        } else {
+            // redireciona pra login se falhar
+            return redirect()->to('login');
+        }
+    }
+
+    public function logout()
+    {
+        // bye bye
+        $session = session();
+        $session->remove('user_id');
+
+        // vai p pagina de login
+        return redirect()->to('login');
+    }
 }
+
